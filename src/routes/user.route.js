@@ -3,5 +3,7 @@ const userController = require('../controllers/user.controller') //importando o 
 
 
 route.post("/", userController.create ) //cpassando o controller como parametro da função, pois é ele que irá lidar com o req e o res
+route.get("/", userController.findAll ); //buscando todos os usuários
+route.get("/:id", userController.findById) //buscando um usuário com um ID especifico, os : representa que é um parametro, o id é o nome que eu dei para o parametro
 
 module.exports = route; //exportando o route para que possamos utilizar em outro arquivo
