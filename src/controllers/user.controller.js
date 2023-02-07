@@ -60,4 +60,43 @@ const findById = async (req, res) =>{
 
 }
 
-module.exports = { create, findAll, findById }
+const update = async(req, res) => {
+    //Pegando as infos do body da requisição
+    const {name, username, email, password, avatar, background}= req.body; //Recebendo todos os campos na requisição através do body
+
+    //Verificando se há pelo menos 1 item para a atualização
+    if(!name && !username && !email && !password && !avatar && !background){
+        res.status(400).send({message:"Submit at least one field for update"})
+    }
+
+    //Pegando o ID através de parametro para sabermos quem iremos atualizar
+    const id = req.params.id //Estamos recebendo o id através do parametro
+    
+    //Verificando se é um id valido
+    if(!mongoose.Types.ObjectId.isValid(id)){ //Aqui temos um mondulo prórpio do mongoose, isso está validando se o ObjectId (o ID) é um tipo valido para o mongoose
+        return res.status(400).send({message:"Invalid ID"})
+    }
+
+    //Caso for um id válido iremos achar ele no banco pelo id
+    const user = await userService.findByIdService(id);
+
+    if(!user){
+        return res.status(400).send ({message: "User not found"});
+    }
+
+    await userService.updateService(
+      id,
+      name, 
+      username, 
+      email, 
+      password, 
+      avatar, 
+      background
+
+    );
+
+    res.send({message: "User succesfully updated!"})
+}
+
+
+module.exports = { create, findAll, findById, update }
