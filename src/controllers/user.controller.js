@@ -1,5 +1,4 @@
 const userService = require('../services/user.service')
-const mongoose = require('mongoose');
 
 const create = async (req, res) => {
     const {name, username, email, password, avatar, background}= req.body;
@@ -44,17 +43,17 @@ const findById = async (req, res) =>{
     const id = req.params.id; //Aqui buscamos o parametro da requisição, caso na nossa rota o nome fosse outro que não id, então aqui apareceria o outro nome
 
 
-    if(!mongoose.Types.ObjectId.isValid(id)){ //Aqui temos um mondulo prórpio do mongoose, isso está validando se o ObjectId (o ID) é um tipo valido para o mongoose
-        return res.status(400).send({message:"Invalid ID"})
-    }
+    // if(!mongoose.Types.ObjectId.isValid(id)){ //Aqui temos um mondulo prórpio do mongoose, isso está validando se o ObjectId (o ID) é um tipo valido para o mongoose
+    //     return res.status(400).send({message:"Invalid ID"})
+    // }
 
 
     //O que qro agora? Buscar meu usuário, buscar onde? No DB, buscar no db pelo Id! E como eu acesso meu DB? Através do Service
     const user = await userService.findByIdService(id);
 
-    if(!user){
-        return res.send(400).send({message: "User not found"})
-    }
+    // if(!user){
+    //     return res.send(400).send({message: "User not found"})
+    // }
 
     res.send(user)
 
@@ -73,16 +72,16 @@ const update = async(req, res) => {
     const id = req.params.id //Estamos recebendo o id através do parametro
     
     //Verificando se é um id valido
-    if(!mongoose.Types.ObjectId.isValid(id)){ //Aqui temos um mondulo prórpio do mongoose, isso está validando se o ObjectId (o ID) é um tipo valido para o mongoose
-        return res.status(400).send({message:"Invalid ID"})
-    }
+    // if(!mongoose.Types.ObjectId.isValid(id)){ //Aqui temos um mondulo prórpio do mongoose, isso está validando se o ObjectId (o ID) é um tipo valido para o mongoose
+    //     return res.status(400).send({message:"Invalid ID"})
+    // }
 
     //Caso for um id válido iremos achar ele no banco pelo id
     const user = await userService.findByIdService(id);
 
-    if(!user){
-        return res.status(400).send ({message: "User not found"});
-    }
+    // if(!user){
+    //     return res.status(400).send ({message: "User not found"});
+    // }
 
     await userService.updateService(
       id,
@@ -91,8 +90,7 @@ const update = async(req, res) => {
       email, 
       password, 
       avatar, 
-      background
-
+      background,
     );
 
     res.send({message: "User succesfully updated!"})
