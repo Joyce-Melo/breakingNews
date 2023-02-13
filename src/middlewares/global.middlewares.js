@@ -6,7 +6,7 @@ const userService = require("../services/user.service");
 //Construção de um middleware, começamos com uma função que recebe 3 parametros
 
 const validId = (req, res, next) => {
-        //O que queremos buscar aqui? Queremos buscar um usuário pelo Id, criamos então uma const id
+       try { //O que queremos buscar aqui? Queremos buscar um usuário pelo Id, criamos então uma const id
         const id = req.params.id; //Aqui buscamos o parametro da requisição, caso na nossa rota o nome fosse outro que não id, então aqui apareceria o outro nome
 
 
@@ -15,23 +15,31 @@ const validId = (req, res, next) => {
         }
 
     next() //serve para ele executar a próxima função que está sendo chamada
-    
+    } catch (err){
+        res.status(500).send({messaage: err.messaage}) 
+    }
 };
 
 const validUser = async (req, res, next) => {
-    const id = req.params.id; 
+   try {
+     const id = req.params.id; 
 
 
     const user = await userService.findByIdService(id);
 
     if(!user){
-        return res.send(400).send({message: "User not found"})
+        return res.status(400).send({message: "User not found"})
     }
 
+    //Na nossa próxima função iremos utilizar o user e o id, então podemos interceptar eles aqui e enviar a requisição lá para o controller, então assim o controller não precisará mais pegar de parametro, pois já estou pegando eles, como parametro da requisição ali em cima na validação, então já mando eles para serem usados no controller na próxima função
     req.id = id;
     req.user = user;
 
     next()
+} catch (err){
+    res.status(500).send({messaage: err.messaage}) //mando então a mensagem de erro
+
+}
 };
 
 module.exports = { validId, validUser };
