@@ -1,6 +1,6 @@
-const express = require ('express')
-const connectDatabase = require("./src/database/db")
-const userRoute = require("./src/routes/user.route") //importando o route para que possamos usar as rota
+import  express  from 'express';
+import connectDatabase from './src/database/db.js';
+import userRoute from './src/routes/user.route.js';
 
 const app = express()
 const port = 3000;

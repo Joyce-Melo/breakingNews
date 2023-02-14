@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); //Estamos importando pois aqui iremos criar uma Schema, que serve basicamente para limitarmos como os documentos serão criados
+import mongoose from 'mongoose'; //Estamos importando pois aqui iremos criar uma Schema, que serve basicamente para limitarmos como os documentos serão criados
 
 const UserSchema = new mongoose.Schema({  //.Schema é um método do mongoose, então criamos um objeto com os campos, cada campo será um objeto e cada um deles tem a definição (config) daquele campos
     name: {
@@ -30,5 +30,5 @@ const UserSchema = new mongoose.Schema({  //.Schema é um método do mongoose, e
 
 const User = mongoose.model("User", UserSchema); //Atribuindo nosso schema a uma const para podermos exporta-lo ("nomeQueVamosDarAoSchema", schemaEmSi), no mongoose.model estamos indicando que isso é um modelo do nosso schema
 
-module.exports = User; //exportando nosso schema
+export default User; //exportando nosso schema
 

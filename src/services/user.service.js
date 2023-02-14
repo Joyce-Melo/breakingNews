@@ -1,4 +1,4 @@
-const User = require("../models/User"); //Importando o Schema que é nosso modelo do banco
+import User from "../models/User.js"; //Importando o Schema que é nosso modelo do banco
 
 const createService = (body) => User.create(body); // Recebe o que é passado no body e passa para o Schema o que recebeu no body
 //O .create é um método do mongoose que irá criar um novo item dentro do nosso schema naquele padrão
@@ -21,7 +21,7 @@ const updateService = (
     { name, username, email, password, avatar, background }
   ); //acha um pelo id e faz o update do campo solicitado
 
-module.exports = {
+export default {
   createService,
   findAllService,
   findByIdService,

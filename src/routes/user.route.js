@@ -1,6 +1,8 @@
-const route = require ('express').Router(); //Chamando o express, executando o route de lá e já atribuindo a variavel
-const userController = require('../controllers/user.controller'); //importando o controlle
-const { validId, validUser } = require('../middlewares/global.middlewares');
+import express from "express";
+import userController from '../controllers/user.controller.js'; //importando o controlle
+import { validId, validUser } from '../middlewares/global.middlewares.js';
+
+const route = express.Router();
 
 
 // const { validId, valiseUser} = require("../middlewares/global.middlewares");
@@ -12,4 +14,4 @@ route.get("/:id", validId, validUser, userController.findById) //buscando um usu
 route.patch("/:id", validId, validUser, userController.update)
 
 
-module.exports = route; //exportando o route para que possamos utilizar em outro arquivo
+export default route //exportando o route para que possamos utilizar em outro arquivo

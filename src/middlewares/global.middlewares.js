@@ -1,11 +1,11 @@
 //Para testarmos o ID precisamos do mongoose, então importamos ele
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 //Para verificarmos o usuário precisamos busca-lo no db, e fazemos essa busca através do service
-const userService = require("../services/user.service");
+import userService from "../services/user.service.js"; 
 
 //Construção de um middleware, começamos com uma função que recebe 3 parametros
 
-const validId = (req, res, next) => {
+export const validId = (req, res, next) => {
        try { //O que queremos buscar aqui? Queremos buscar um usuário pelo Id, criamos então uma const id
         const id = req.params.id; //Aqui buscamos o parametro da requisição, caso na nossa rota o nome fosse outro que não id, então aqui apareceria o outro nome
 
@@ -20,7 +20,7 @@ const validId = (req, res, next) => {
     }
 };
 
-const validUser = async (req, res, next) => {
+export const validUser = async (req, res, next) => {
    try {
      const id = req.params.id; 
 
@@ -42,4 +42,3 @@ const validUser = async (req, res, next) => {
 }
 };
 
-module.exports = { validId, validUser };
