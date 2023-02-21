@@ -1,4 +1,4 @@
-import { createService, findAllService, countNewsService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService, topNewsService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -27,7 +27,8 @@ const create = async (req, res) => {
 }
 
 const findAll = async (req, res) => {
-    let { limit, offset } = req.query
+    try{
+        let { limit, offset } = req.query
 
     limit = Number(limit)
     offset = Number(offset)
@@ -67,7 +68,7 @@ const findAll = async (req, res) => {
 
         results: news.map(newsItem => ({ //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
             id: newsItem._id,
-            title: newsItem.item,
+            title: newsItem.title,
             text: newsItem.text,
             banner: newsItem.banner,
             likes: newsItem.likes,
@@ -77,9 +78,40 @@ const findAll = async (req, res) => {
             userAvatar: newsItem.user.avatar,
         }))
     })
+}catch(error){
+    res.status(500).send({message: error.message});
 }
+}
+
+const topNews = async (req, res) => {
+    
+    try {
+        const news = await topNewsService();
+
+    if(!news) {
+        return res.status(400).send({message: "There is no registered post"});
+    }
+
+    res.send({
+        news:{
+        id: news._id,
+        title: news.title,
+        text: news.text,
+        banner: news.banner,
+        likes: news.likes,
+        comments: news.comments,
+        name: news.user.name, //.user pq estamos pegando do objeto user
+        userName: news.user.username,
+        userAvatar: news.user.avatar,
+    }})
+    }catch(error){
+    res.status(500).send({message: error.message});
+}
+
+};
 
 export {
     create,
     findAll,
+    topNews,
 }

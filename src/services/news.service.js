@@ -9,10 +9,13 @@ const findAllService = (offset, limit) => News.find().sort({_id: -1}).skip(offse
 
 const countNewsService = () => News.countDocuments(); //countdocuments é uma função do mongoose que conta quantos documentos temos ali no db
 
+const topNewsService = () => News.findOne().sort({_id: -1}).populate("user") //Se eu não passar nada no findOne ele retornará o primeiro item da lista, como estou fazendo sort_id-1 o primeiro item é o mais recente
+
 
 export {
     createService,
     findAllService,
-    countNewsService
+    countNewsService,
+    topNewsService,
 }
 
