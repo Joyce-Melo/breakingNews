@@ -1,4 +1,4 @@
-import { createService, findAllService, countNewsService, topNewsService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService, topNewsService, findByIdService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -110,8 +110,35 @@ const topNews = async (req, res) => {
 
 };
 
+const findById = async (req, res) => {
+try{
+    const { id } = req.params //Esse id é o msm nome que colocamos na rota
+
+    const news = await findByIdService(id)
+
+    return res.send({
+        news:{
+            id: news._id,
+            title: news.title,
+            text: news.text,
+            banner: news.banner,
+            likes: news.likes,
+            comments: news.comments,
+            name: news.user.name, //.user pq estamos pegando do objeto user
+            userName: news.user.username,
+            userAvatar: news.user.avatar,
+        },
+    })
+
+
+}catch(error){
+    res.status(500).send({message: error.message});
+}
+}
+
 export {
     create,
     findAll,
     topNews,
+    findById
 }
