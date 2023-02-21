@@ -1,4 +1,4 @@
-import { createService, findAllService, countNewsService, topNewsService, findByIdService, searchByTitleService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService, topNewsService, findByIdService, searchByTitleService, byUserService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -167,10 +167,35 @@ const searchByTitle = async (req, res) => {
  }
 }
 
+const byUser = async (req, res) => {
+    try{
+        const id = req.userId //variável do middleware de autenticação, onde pego o id do token, e eu tenho accesso a ela, pq na rota, antes de vir para cá eu passo por essa middleware de autenticação
+        const news = await byUserService(id);
+
+        return res.send({
+            results: news.map(newsItem => ({ //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
+                id: newsItem._id,
+                title: newsItem.title,
+                text: newsItem.text,
+                banner: newsItem.banner,
+                likes: newsItem.likes,
+                comments: newsItem.comments,
+                name: newsItem.user.name, //.user pq estamos pegando do objeto user
+                userName: newsItem.user.username,
+                userAvatar: newsItem.user.avatar,
+        })),   
+    })
+        } catch(error){
+        res.status(500).send({message: error.message});
+     }
+
+}
+
 export {
     create,
     findAll,
     topNews,
     findById,
     searchByTitle,
+    byUser,
 }

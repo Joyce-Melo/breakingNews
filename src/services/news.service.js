@@ -19,4 +19,4 @@ export const searchByTitleService = (title) => News.find({
 .sort({_id: -1})                        //Criar o regex aqui no service ao invés do controller pode aumentar a velocidade da nossa busca no banco
 .populate("user")                       //$options: "i" essas option é para determinarmos se há a diferenciação de maiusculo e minusculo, no nosso caso não, então colocamos i de case insensitive
  
-       
+export const byUserService = (id) => News.find({user:id}).sort({_id: -1}).populate("user")  //nosso user na model de news é o objectId
