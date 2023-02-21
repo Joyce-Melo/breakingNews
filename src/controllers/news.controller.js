@@ -1,4 +1,4 @@
-import { createService, findAllService, countNewsService, topNewsService, findByIdService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService, topNewsService, findByIdService, searchByTitleService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -24,7 +24,7 @@ const create = async (req, res) => {
     }
 
    
-}
+};
 
 const findAll = async (req, res) => {
     try{
@@ -81,7 +81,7 @@ const findAll = async (req, res) => {
 }catch(error){
     res.status(500).send({message: error.message});
 }
-}
+};
 
 const topNews = async (req, res) => {
     
@@ -134,11 +134,43 @@ try{
 }catch(error){
     res.status(500).send({message: error.message});
 }
+};
+
+const searchByTitle = async (req, res) => {
+ try
+ {
+    const { title } = req.query;
+
+    const news = await searchByTitleService(title);
+    
+    if(news.lenght === 0){
+        return res
+        .status(400)
+        .send({message: "There are no news with this title"})
+    }
+    //o find (que está em searchByTittleService) sempre retorna um array, então temos que retornar um array, por isso usamos o map
+    return res.send({
+        results: news.map(newsItem => ({ //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
+            id: newsItem._id,
+            title: newsItem.title,
+            text: newsItem.text,
+            banner: newsItem.banner,
+            likes: newsItem.likes,
+            comments: newsItem.comments,
+            name: newsItem.user.name, //.user pq estamos pegando do objeto user
+            userName: newsItem.user.username,
+            userAvatar: newsItem.user.avatar,
+    })),
+})
+ } catch(error){
+    res.status(500).send({message: error.message});
+ }
 }
 
 export {
     create,
     findAll,
     topNews,
-    findById
+    findById,
+    searchByTitle,
 }

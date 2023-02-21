@@ -13,4 +13,10 @@ export const topNewsService = () => News.findOne().sort({_id: -1}).populate("use
 
 export const findByIdService = (id) => News.findById(id).populate("user");
 
-
+export const searchByTitleService = (title) => News.find({
+    title: {$regex: `${title || ""}`, $options: "i"}, //para usarmos um comando especifico dentro do mongodb usamos o $, estamos usando o regex do próprio mongo
+}) //${title || ""} isso significa que ele pode manda o title completo ou parte dele
+.sort({_id: -1})                        //Criar o regex aqui no service ao invés do controller pode aumentar a velocidade da nossa busca no banco
+.populate("user")                       //$options: "i" essas option é para determinarmos se há a diferenciação de maiusculo e minusculo, no nosso caso não, então colocamos i de case insensitive
+ 
+       
