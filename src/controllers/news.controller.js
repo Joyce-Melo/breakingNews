@@ -1,4 +1,4 @@
-import { createService, findAllService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -27,11 +27,56 @@ const create = async (req, res) => {
 }
 
 const findAll = async (req, res) => {
-    const news = await findAllService();
+    let { limit, offset } = req.query
+
+    limit = Number(limit)
+    offset = Number(offset)
+
+    if(!limit){ //lembrando que um queryparams é opcional, então aqui estamos setando um valor padrão para o caso de não ser enviado nada
+        limit = 5;
+    }
+    if (!offset){
+        offset = 0; //offset é "da onde eu começo", na primeira vez começo de zero e mostro 5(primeira pag), da segunda vez começo do 5 e coloco 5 (segunda pag) e assim por diante
+    } 
+
+
+    const news = await findAllService(offset, limit); //passando então o offset e o limit para nosso db, pois não queremos que ele busque absolutamente tudo de uma vez no db, pois quanto mais dados mais lento, assim conseguimos paginar o db também
+    const total = await countNewsService() //esse total é o total de noticias que tenho no nosos banco
+    const currentUrl = req.baseUrl //baseUrl vem do header e é o url que fez a requisição, isso é padrão
+    console.log(currentUrl);
+
+    //mais para frente
+    const next = offset + limit; //isso acontecerá sempre que uma requisição for feita
+    const nextUrl = next < total ? `${currentUrl}?limit${limit}&offset=${next}` : null;
+    //Aqui estou criando uma nova url com os novos limits e offset
+    
+    //voltando
+    const previous = offset - limit < 0 ? null :  offset - limit;
+    const previousUrl = previous != null ? `${currentUrl}?limit${limit}&offset=${previous}` : null;
+
+
     if(news.lenght === 0){
         return res.status(400).send({message: "There are no registered news"});
     }
-    res.send(news);
+    res.send({ //esse retorno é para o front e ele precisará de todas essas infos
+        nextUrl,
+        previousUrl,
+        limit,
+        offset,
+        total,
+
+        results: news.map(newsItem => ({ //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
+            id: newsItem._id,
+            title: newsItem.item,
+            text: newsItem.text,
+            banner: newsItem.banner,
+            likes: newsItem.likes,
+            comments: newsItem.comments,
+            name: newsItem.user.name, //.user pq estamos pegando do objeto user
+            userName: newsItem.user.username,
+            userAvatar: newsItem.user.avatar,
+        }))
+    })
 }
 
 export {
