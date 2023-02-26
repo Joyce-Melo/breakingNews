@@ -20,3 +20,7 @@ export const searchByTitleService = (title) => News.find({
 .populate("user")                       //$options: "i" essas option é para determinarmos se há a diferenciação de maiusculo e minusculo, no nosso caso não, então colocamos i de case insensitive
  
 export const byUserService = (id) => News.find({user:id}).sort({_id: -1}).populate("user")  //nosso user na model de news é o objectId
+
+export const updateService = (id, title, text, banner) => News.findOneAndUpdate({_id:id}, {title, text, banner}, {rawResult: true}) //faremos update por postagem, não vamos atualizar tudo de uma vez, pois isso é o famoso update sem where, se vc não falar o que quer atualizar, todo o banco será atualizado e isso pode dar problema
+//A função do mongoose para atualizar é o findOneAndUpdate, que recebe 2 parametros, o primeiro qual dado quero atualizar, e o segundo o que eu qro atualizar, no nosso caso qro atualizar um dado segundo o id
+//RawResult: true -> para que ele mostre o item depois de atualizado

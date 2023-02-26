@@ -1,4 +1,4 @@
-import { createService, findAllService, countNewsService, topNewsService, findByIdService, searchByTitleService, byUserService } from "../services/news.service.js"
+import { createService, findAllService, countNewsService, topNewsService, findByIdService, searchByTitleService, byUserService, updateService } from "../services/news.service.js"
 
 
 const create = async (req, res) => {
@@ -191,6 +191,36 @@ const byUser = async (req, res) => {
 
 }
 
+const update = async(req, res) => {
+try{
+
+    const {title, text, banner} = req.body;
+    const { id } = req.params; //id da postagem que qro atualizar
+
+    if(!title && !banner && !text) {
+        res.status(400).send({
+            message: "Submit at least one field for update",
+        });
+    }
+
+    const news = await findByIdService(id); //procurando a news
+
+
+    if(news.user._id != req.userId){//req.userId é o id de quem está logado, e só poderá fazer a atualização quem estiver logado, ps: vem do middleware
+        return res.status(400).send({
+            message: "You can not update this post",
+        });
+    }
+
+    await updateService(id, title, text, banner); //O que estou passando são os parametros então precisam estar na msm rdem de que foi pedida no service
+
+    return res.send({message: "Post succesfully updated"});
+
+}catch(error){
+        res.status(500).send({message: error.message});
+     }
+}
+
 export {
     create,
     findAll,
@@ -198,4 +228,5 @@ export {
     findById,
     searchByTitle,
     byUser,
+    update,
 }
