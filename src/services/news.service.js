@@ -35,3 +35,15 @@ export const updateService = (id, title, text, banner) =>
 //RawResult: true -> para que ele mostre o item depois de atualizado
 
 export const eraseService = (id) => News.findByIdAndDelete({ _id: id });
+
+export const likeNewsService = (idNews, userId) =>
+  News.findOneAndUpdate(
+    { _id: idNews, "likes.userId": { $nin: [userId] } },
+    { $push: { likes: { userId, created: new Date() } } }
+  ); //O que vou atualizar é o array de likes, recebo dois parametros que são objetos, o 1º - Qual que é o documento (que saberemos através do id), e o que quero fazer, no nosso caso incrementar o array, em js fazemos isso usando o push, e no mongo também, porém no mongo temos que colocar o "$" e fica assim: $push para indicar query, especificamos também em qual campo iremos fazer esse push
+//Que no nosso caso é o like e passamos um objeto dentro dele, onde colocamos o userId que é quem está dando o like e quando aquilo foi feito
+// "likes.userId" : {$nin: [userId] estou fazendo um filtro, dentro dessa noticia que eu achei, vai no campos likes, procura nesse array o campo userId, se ele encontrar um userId for o mesmo do userId que está tentando dar o like novamente nessa msm noticia, ele retorna um erro (nin = not in)
+
+export const deleteLikeNewsService = (idNews, userId) =>
+  News.findOneAndUpdate({ _id: idNews }, { $pull: { likes: { userId } } });
+//pull para retirar

@@ -8,6 +8,8 @@ import {
   byUserService,
   updateService,
   eraseService,
+  likeNewsService,
+  deleteLikeNewsService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
@@ -251,6 +253,25 @@ const erase = async (req, res) => {
   }
 };
 
+const likeNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId; //id de quem está fazendo o like
+
+    const newsLiked = await likeNewsService(id, userId);
+
+    if (!newsLiked) {
+      //quando ele vê que a pessoa já deu um like naquela postagem, ele interpreta como null, null e js é falsy, então o que podemos fazer aqui é uma validação, quando uma pessoa que já deu um like naquele post tentar dar um like novamente ele descurti a postagem, ou seja, nós removemos aquele like
+      await deleteLikeNewsService(id, userId);
+      return res.status(200).send({ message: "Like succesfully removed" });
+    }
+
+    res.send({ message: "Like done succesfully" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
 export {
   create,
   findAll,
@@ -260,4 +281,5 @@ export {
   byUser,
   update,
   erase,
+  likeNews,
 };
