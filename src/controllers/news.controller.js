@@ -10,6 +10,8 @@ import {
   eraseService,
   likeNewsService,
   deleteLikeNewsService,
+  addCommentService,
+  deleteCommentService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
@@ -272,6 +274,61 @@ const likeNews = async (req, res) => {
   }
 };
 
+const addComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { comments } = req.body; //Assim com o {} eu envio apenas o campo comment, se eu colocar sem o {} eu envio o objeto comment "comment": "conteúdoDoComment", isso tudo é o objeto, como quero só o "conteúdoDoComment" envio desconstruído
+
+    if (!comments) {
+      return res.status(400).send({ message: "Write a message to comment" });
+    }
+
+    await addCommentService(id, comments, userId);
+
+    res.send({
+      message: "Comment succesfully completed!",
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { idNews, idComment } = req.params;
+    const userId = req.userId;
+
+    const commentDeleted = await deleteCommentService(
+      idNews,
+      idComment,
+      userId
+    );
+
+    console.log(commentDeleted); //Usamos esse console.log para ver o que está sendo retornado quando deletemaos um comentário, vimos que ele retorna um objeto
+    //Nesse objeto há o userId, então iremos usar isso para fazer o validação a baixo, assim conseguiremos saber se quem está tentando apagar o comentário é o dono do comentário
+
+
+    const commentFinder = commentDeleted.comments.find(comment => comment.idComment === idComment) //procura pelo comentário que tem o msm idcomment que estamos passando na rota
+
+      if(!commentFinder){
+        return res.status(404).send({ message: "Comment not found" });
+      }
+  
+
+    if (commentFinder.userId !== userId) {
+      //verifica se o usuário do comentário é diferente do que está logado
+      return res.status(400).send({ message: "You can't delete this comment" });
+    }
+
+    res.send({
+      message: "Comment succesfully deleted!",
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
 export {
   create,
   findAll,
@@ -282,4 +339,6 @@ export {
   update,
   erase,
   likeNews,
+  addComment,
+  deleteComment,
 };

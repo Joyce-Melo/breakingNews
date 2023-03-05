@@ -11,6 +11,8 @@ import {
   update,
   erase,
   likeNews,
+  addComment,
+  deleteComment,
 } from "../controllers/news.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -24,5 +26,7 @@ router.get("/:id", authMiddleware, findById); //:id - parametro que pasamos para
 router.patch("/:id", authMiddleware, update);
 router.delete("/:id", authMiddleware, erase); //não podemos usar a palavra delete como nome da nossa função pois delete é uma palavra reservada do express
 router.patch("/like/:id", authMiddleware, likeNews); //Não dou um like em várias noticias ao msm tempo, é sempre uma por vez, então tenho que saber em qual noticia estou dando esse like, patch pq estarei alterando o array dos likes, ele começará com zero e conforme for ganhando likes esses array será incrementado
+router.patch("/comment/:id", authMiddleware, addComment);
+router.patch("/comment/:idNews/:idComment", authMiddleware, deleteComment); //Aqui é a rota de apagar um comentário, então pq não estamos usando o delete? Bom, nós não queremos apagar o documento, nós iremos apenas alterar o documento, eu vou tirar um comentário do documento
 
 export default router;

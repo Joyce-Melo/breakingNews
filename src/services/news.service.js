@@ -47,3 +47,26 @@ export const likeNewsService = (idNews, userId) =>
 export const deleteLikeNewsService = (idNews, userId) =>
   News.findOneAndUpdate({ _id: idNews }, { $pull: { likes: { userId } } });
 //pull para retirar
+
+export const addCommentService = (idNews, comments, userId) => {
+  const idComment = Math.floor(Date.now() * Math.random()).toString(36); //aqui nós estamos criando um id aleatório, estou pegando a data do dia, multiplicando por um numero aletório, arredondando para não ficar quebrado e transformando em uma string com 36 caracteres
+
+  return News.findOneAndUpdate(
+    //como estamos em bloco precisamos adicionar o return, então nossa função irá retornar o que vier aqui desse update
+    { _id: idNews }, //estamos buscando o id
+    {
+      $push: {
+        //fazendo o push em comments
+        comments: { idComment, userId, comments, createdAt: new Date() },
+      }, //estou colocando em cd comentário o id do comment, um userid e o proprio comentário e terei o created at
+    }
+  );
+};
+//Cada comentário precisará de um ID, pois um msm usuário poderá fazer vários comentários, então temos que criar um, por esse motivo,
+//não conseguiremos deixar essa função inline, teremos que fazer uma função em bloco, pois antes de adicionar de fato um comentário, temos que cirar um id pra ele
+
+export const deleteCommentService = (idNews, idComment, userId) =>
+  News.findOneAndUpdate(
+    { _id: idNews },
+    { $pull: { comments: { idComment, userId } } } //Estou filtrando pelo id do comentário e pelo id do usuário, apenas o usuário que criou o comentário é capaz de apagar ele
+  );
