@@ -1,90 +1,83 @@
-import userService from '../services/user.service.js';
+import userService from "../services/user.service.js";
 
 const create = async (req, res) => {
-   try { 
-    const {name, username, email, password, avatar, background}= req.body;
+  try {
+    const { name, username, email, password, avatar, background } = req.body;
 
-    if(!name || !username || !email || !password || !avatar || !background){
-        res.status(400).send({message:"Submit all fields for registration"})
+    if (!name || !username || !email || !password || !avatar || !background) {
+      res.status(400).send({ message: "Submit all fields for registration" });
     }
 
-    const user = await userService.createService(req.body) 
+    const user = await userService.createService(req.body);
 
-    if(!user) { 
-        return res.status(400).send({message: "Error creating User"})
+    if (!user) {
+      return res.status(400).send({ message: "Error creating User" });
     }
 
     res.status(201).send({
-        message: "User created succesfully",
-        user: {
-            id: user._id, //_id pq é dessa forma que é criado no MongoDB por padrão
-            name,
-            username,
-            email,
-            avatar,
-            background,
-        }
-       
-    }) //Ele só não consiguirá fazer isso acima, se houver um erro de servidor, então no catch mando o erro de servidor
-} catch(err) {
-    res.status(500).send({messaage: err.messaage}) //mando então a mensagem de erro
-}
+      message: "User created succesfully",
+      user: {
+        id: user._id,
+        name,
+        username,
+        email,
+        avatar,
+        background,
+      },
+    });
+  } catch (err) {
+    res.status(500).send({ messaage: err.messaage });
+  }
 };
 
-const findAll = async (req, res) =>{ 
-      try { 
-        const users = await userService.findAllService(); 
+const findAll = async (req, res) => {
+  try {
+    const users = await userService.findAllService();
 
-        if(users.lenght === 0){
-            return res.status(400).send({message: "There are no registered users"});
-        }
-
-        res.send(users) 
-    } catch (err){
-        res.status(500).send({message: err.message})
+    if (users.lenght === 0) {
+      return res.status(400).send({ message: "There are no registered users" });
     }
 
-}
+    res.send(users);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
 
-const findById = async (req, res) =>{
-    try{
-        const user = req.user;
+const findById = async (req, res) => {
+  try {
+    const user = req.user;
 
-    res.send(user)
-} catch (err){
-    res.status(500).send({message: err.message})
-}
+    res.send(user);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
 
-}
+const update = async (req, res) => {
+  try {
+    const { name, username, email, password, avatar, background } = req.body;
 
-const update = async(req, res) => {
-    //Pegando as infos do body da requisição
-    try {
-        const {name, username, email, password, avatar, background}= req.body; 
-
-    //Verificando se há pelo menos 1 item para a atualização
-    if(!name && !username && !email && !password && !avatar && !background){
-        res.status(400).send({message:"Submit at least one field for update"})
+    if (!name && !username && !email && !password && !avatar && !background) {
+      res.status(400).send({ message: "Submit at least one field for update" });
     }
 
-    const {id, user} = req;
-    
+    const { id, user } = req;
 
     await userService.updateService(
       id,
-      name, 
-      username, 
-      email, 
-      password, 
-      avatar, 
-      background,
+      name,
+      username,
+      email,
+      password,
+      avatar,
+      background
     );
 
-    res.send({message: "User succesfully updated!"})
-} catch (err){
-    res.status(500).send({message: err.message})
-}
-}
+    res.send({ message: "User succesfully updated!" });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
 
-
-export default { create, findAll, findById, update }
+export default { create, findAll, findById, update };

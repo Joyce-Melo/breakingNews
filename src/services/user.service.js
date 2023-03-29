@@ -1,11 +1,10 @@
-import User from "../models/User.js"; //Importando o Schema que é nosso modelo do banco
+import User from "../models/User.js";
 
-const createService = (body) => User.create(body); // Recebe o que é passado no body e passa para o Schema o que recebeu no body
-//O .create é um método do mongoose que irá criar um novo item dentro do nosso schema naquele padrão
+const createService = (body) => User.create(body);
 
-const findAllService = () => User.find(); //Precisamos usar apenas o .find() que é uma função do mongoose
+const findAllService = () => User.find();
 
-const findByIdService = (id) => User.findById(id); //finByID também é um parametro próprio do mongoose
+const findByIdService = (id) => User.findById(id);
 
 const updateService = (
   id,
@@ -16,10 +15,10 @@ const updateService = (
   avatar,
   background
 ) =>
-  User.findOneAndUpdate( //Passamos então dois ojetos, o primeiro é pelo que devemos procurar, no nosso caso é o id, o id no mongoDB é _id, então por isso colocamos _id:id, e o segundo objeto são os campos que quero atualizar
+  User.findOneAndUpdate(
     { _id: id },
     { name, username, email, password, avatar, background }
-  ); //acha um pelo id e faz o update do campo solicitado
+  );
 
 export default {
   createService,

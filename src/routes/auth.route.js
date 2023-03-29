@@ -1,8 +1,8 @@
-import { Router } from "express" //Trazendo diretamente o Router do express, diferentemente do user.route que trouxemos todo o express e do express puxamos o router
-const router = Router(); //executando o router
+import { Router } from "express";
+const router = Router(); 
 
-import { login } from "../controllers/auth.controller.js"; //como tenho apenas uma função dentro desse nosso controller eu desestruturei tanto o export lá, mandando apenas o login, quanto o import aqui, puxando apenas o login, clean code
+import { login } from "../controllers/auth.controller.js";
 
-router.post("/", login) //autenticação normalmente fazemos com post, função login do controller
+router.post("/", login) ;
 
 export default router;

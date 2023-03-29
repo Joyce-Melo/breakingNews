@@ -1,6 +1,6 @@
 import  express  from 'express';
 import connectDatabase from './src/database/db.js';
-import dotenv from "dotenv"; //importando
+import dotenv from "dotenv"; 
 
 
 import userRoute from './src/routes/user.route.js';
@@ -8,7 +8,7 @@ import authRouter from './src/routes/auth.route.js';
 import newsRouter from './src/routes/news.route.js';
 import swaggerRouter from "./src/routes/swagger.route.cjs"
 
-dotenv.config() //habilitei
+dotenv.config() 
 
 const app = express()
 const port = process.env.PORT || 3000;

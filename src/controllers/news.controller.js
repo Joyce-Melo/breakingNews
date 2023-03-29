@@ -16,7 +16,6 @@ import {
 
 const create = async (req, res) => {
   try {
-    //Como faço para pegar o id do user no login? No auth.service usamos o id como um dos componenetes para criar o token, e ao final do login no auth.controller nós retornamos o token, então para sabermos qual id está conectado nós utilizamos esse token que foi retornado
     const { title, text, banner } = req.body;
 
     if (!title || !banner || !text) {
@@ -26,11 +25,10 @@ const create = async (req, res) => {
     }
 
     await createService({
-      //o createService espera pelo body e estou mandando ele desconstruido
       title,
       text,
       banner,
-      user: req.userId, //agora conseguimos mandar o que vem do decoded id lá do middleware
+      user: req.userId,
     });
 
     res.send(201);
@@ -47,25 +45,21 @@ const findAll = async (req, res) => {
     offset = Number(offset);
 
     if (!limit) {
-      //lembrando que um queryparams é opcional, então aqui estamos setando um valor padrão para o caso de não ser enviado nada
       limit = 5;
     }
     if (!offset) {
-      offset = 0; //offset é "da onde eu começo", na primeira vez começo de zero e mostro 5(primeira pag), da segunda vez começo do 5 e coloco 5 (segunda pag) e assim por diante
+      offset = 0;
     }
 
-    const news = await findAllService(offset, limit); //passando então o offset e o limit para nosso db, pois não queremos que ele busque absolutamente tudo de uma vez no db, pois quanto mais dados mais lento, assim conseguimos paginar o db também
-    const total = await countNewsService(); //esse total é o total de noticias que tenho no nosos banco
-    const currentUrl = req.baseUrl; //baseUrl vem do header e é o url que fez a requisição, isso é padrão
+    const news = await findAllService(offset, limit);
+    const total = await countNewsService();
+    const currentUrl = req.baseUrl;
     console.log(currentUrl);
 
-    //mais para frente
-    const next = offset + limit; //isso acontecerá sempre que uma requisição for feita
+    const next = offset + limit;
     const nextUrl =
       next < total ? `${currentUrl}?limit${limit}&offset=${next}` : null;
-    //Aqui estou criando uma nova url com os novos limits e offset
 
-    //voltando
     const previous = offset - limit < 0 ? null : offset - limit;
     const previousUrl =
       previous != null
@@ -76,7 +70,6 @@ const findAll = async (req, res) => {
       return res.status(400).send({ message: "There are no registered news" });
     }
     res.send({
-      //esse retorno é para o front e ele precisará de todas essas infos
       nextUrl,
       previousUrl,
       limit,
@@ -84,14 +77,13 @@ const findAll = async (req, res) => {
       total,
 
       results: news.map((newsItem) => ({
-        //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
         banner: newsItem.banner,
         likes: newsItem.likes,
         comments: newsItem.comments,
-        name: newsItem.user.name, //.user pq estamos pegando do objeto user
+        name: newsItem.user.name,
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
@@ -117,7 +109,7 @@ const topNews = async (req, res) => {
         banner: news.banner,
         likes: news.likes,
         comments: news.comments,
-        name: news.user.name, //.user pq estamos pegando do objeto user
+        name: news.user.name,
         userName: news.user.username,
         userAvatar: news.user.avatar,
       },
@@ -129,7 +121,7 @@ const topNews = async (req, res) => {
 
 const findById = async (req, res) => {
   try {
-    const { id } = req.params; //Esse id é o msm nome que colocamos na rota
+    const { id } = req.params;
 
     const news = await findByIdService(id);
 
@@ -141,7 +133,7 @@ const findById = async (req, res) => {
         banner: news.banner,
         likes: news.likes,
         comments: news.comments,
-        name: news.user.name, //.user pq estamos pegando do objeto user
+        name: news.user.name,
         userName: news.user.username,
         userAvatar: news.user.avatar,
       },
@@ -162,17 +154,15 @@ const searchByTitle = async (req, res) => {
         .status(400)
         .send({ message: "There are no news with this title" });
     }
-    //o find (que está em searchByTittleService) sempre retorna um array, então temos que retornar um array, por isso usamos o map
     return res.send({
       results: news.map((newsItem) => ({
-        //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
         banner: newsItem.banner,
         likes: newsItem.likes,
         comments: newsItem.comments,
-        name: newsItem.user.name, //.user pq estamos pegando do objeto user
+        name: newsItem.user.name,
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
@@ -184,19 +174,18 @@ const searchByTitle = async (req, res) => {
 
 const byUser = async (req, res) => {
   try {
-    const id = req.userId; //variável do middleware de autenticação, onde pego o id do token, e eu tenho accesso a ela, pq na rota, antes de vir para cá eu passo por essa middleware de autenticação
+    const id = req.userId;
     const news = await byUserService(id);
 
     return res.send({
       results: news.map((newsItem) => ({
-        //map retorna um array, então ele vai varrer esse array de news e retornará um novo array com as infos abaixo
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
         banner: newsItem.banner,
         likes: newsItem.likes,
         comments: newsItem.comments,
-        name: newsItem.user.name, //.user pq estamos pegando do objeto user
+        name: newsItem.user.name,
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
@@ -209,7 +198,7 @@ const byUser = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { title, text, banner } = req.body;
-    const { id } = req.params; //id da postagem que qro atualizar
+    const { id } = req.params;
 
     if (!title && !banner && !text) {
       res.status(400).send({
@@ -217,16 +206,15 @@ const update = async (req, res) => {
       });
     }
 
-    const news = await findByIdService(id); //procurando a news
+    const news = await findByIdService(id);
 
     if (news.user._id != req.userId) {
-      //req.userId é o id de quem está logado, e só poderá fazer a atualização quem estiver logado, ps: vem do middleware
       return res.status(400).send({
         message: "You can not update this post",
       });
     }
 
-    await updateService(id, title, text, banner); //O que estou passando são os parametros então precisam estar na msm rdem de que foi pedida no service
+    await updateService(id, title, text, banner);
 
     return res.send({ message: "Post succesfully updated" });
   } catch (error) {
@@ -236,12 +224,11 @@ const update = async (req, res) => {
 
 const erase = async (req, res) => {
   try {
-    const { id } = req.params; //id da postagem que qro atualizar
+    const { id } = req.params;
 
-    const news = await findByIdService(id); //procurando a news
+    const news = await findByIdService(id);
 
     if (news.user._id != req.userId) {
-      //req.userId é o id de quem está logado, e só poderá fazer a atualização quem estiver logado, ps: vem do middleware
       return res.status(400).send({
         message: "You can not delete this post",
       });
@@ -258,12 +245,11 @@ const erase = async (req, res) => {
 const likeNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.userId; //id de quem está fazendo o like
+    const userId = req.userId;
 
     const newsLiked = await likeNewsService(id, userId);
 
     if (!newsLiked) {
-      //quando ele vê que a pessoa já deu um like naquela postagem, ele interpreta como null, null e js é falsy, então o que podemos fazer aqui é uma validação, quando uma pessoa que já deu um like naquele post tentar dar um like novamente ele descurti a postagem, ou seja, nós removemos aquele like
       await deleteLikeNewsService(id, userId);
       return res.status(200).send({ message: "Like succesfully removed" });
     }
@@ -278,7 +264,7 @@ const addComment = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
-    const { comments } = req.body; //Assim com o {} eu envio apenas o campo comment, se eu colocar sem o {} eu envio o objeto comment "comment": "conteúdoDoComment", isso tudo é o objeto, como quero só o "conteúdoDoComment" envio desconstruído
+    const { comments } = req.body;
 
     if (!comments) {
       return res.status(400).send({ message: "Write a message to comment" });
@@ -305,19 +291,17 @@ const deleteComment = async (req, res) => {
       userId
     );
 
-    console.log(commentDeleted); //Usamos esse console.log para ver o que está sendo retornado quando deletemaos um comentário, vimos que ele retorna um objeto
-    //Nesse objeto há o userId, então iremos usar isso para fazer o validação a baixo, assim conseguiremos saber se quem está tentando apagar o comentário é o dono do comentário
+    console.log(commentDeleted);
 
+    const commentFinder = commentDeleted.comments.find(
+      (comment) => comment.idComment === idComment
+    );
 
-    const commentFinder = commentDeleted.comments.find(comment => comment.idComment === idComment) //procura pelo comentário que tem o msm idcomment que estamos passando na rota
-
-      if(!commentFinder){
-        return res.status(404).send({ message: "Comment not found" });
-      }
-  
+    if (!commentFinder) {
+      return res.status(404).send({ message: "Comment not found" });
+    }
 
     if (commentFinder.userId !== userId) {
-      //verifica se o usuário do comentário é diferente do que está logado
       return res.status(400).send({ message: "You can't delete this comment" });
     }
 
